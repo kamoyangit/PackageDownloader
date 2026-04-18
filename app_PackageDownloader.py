@@ -8,6 +8,12 @@ import os
 st.set_page_config(page_title="Offline Package Downloader", page_icon="📦")
 st.title("📦 Offline Package Downloader")
 st.write("`requirements.txt`をアップロードすると、指定したOS・Pythonバージョン用のオフラインインストール用パッケージ（wheel）を収集し、ZIP化してダウンロードできます。")
+st.markdown("---")
+st.write("【ZIPファイルの解凍】")
+st.write("`unzip package_xxx-xxx_pyxxx.zip -d offline_packages`")
+st.write("【ライプライリのインポート】")
+st.write("`pip install --no-index --find-links=./offline_packages -r requirements.txt`")
+st.markdown("---")
 
 # --- 設定パラメータの入力 ---
 col1, col2 = st.columns(2)
