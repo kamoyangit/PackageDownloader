@@ -71,10 +71,15 @@ if uploaded_file is not None:
             cmd = [
                 "pip", "download", "-r", req_file_path,
                 "-d", download_dir,
-                "--platform", platform_tag,
                 "--python-version", py_ver_short,
                 "--implementation", "cp",
+                # プラットフォームの指定
+                "--platform", platform_tag,
+                "--platform", "any",  # 追加: OS非依存パッケージ(any)を許可
+                # ABIの指定
                 "--abi", f"cp{py_ver_short}",
+                "--abi", "abi3",      # 追加: C拡張のStable ABIを許可
+                "--abi", "none",      # 追加: Pure Python (coloramaなど) を許可
                 "--only-binary=:all:"
             ]
 
