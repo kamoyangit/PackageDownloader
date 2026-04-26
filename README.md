@@ -103,6 +103,11 @@ pip install --no-index --find-links=./offline_packages -r requirements.txt
 
 ---
 
-**開発者**: [あなたの名前/GitHubユーザー名]  
+## 変更履歴（更新）
+- Windows 向けに **uv** を廃止し、純粋な `pip download` コマンドを使用してパッケージ取得を行うよう改善しました。<br>
+- `--only-binary=:all:` オプションを追加し、Windows でも `colorama` の wheel ファイルを含めてダウンロードできるようにしました。<br>
+- エラーログは発生しないことを確認済み（Windows 用 ZIP が正常生成され、colorama wheel が含まれる）。
+
+**開発者**: 鴨川浩二  
 **報告先**: 問題や改善提案があれば、GitHub Issuesまでお願いします。
 ```
