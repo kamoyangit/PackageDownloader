@@ -43,13 +43,20 @@ if uploaded_file is not None:
     with st.expander("アップロードされた requirements.txt の内容を確認"):
         st.code(uploaded_file.getvalue().decode("utf-8"))
 
-    if st.button("パッケージを収集してZIPを作成", type="primary"):
-        # 処理状態を表示するプレースホルダー
-        status_text = st.empty()
-        progress_bar = st.progress(0)
-        
-        os_prefix, platform_tag = platform_map[target_os]
-        py_ver_short = target_py_version.replace(".", "") # "3.10" -> "310"
+    if st.button("パッケージを収集してZIPを作成"):
+        # requirements.txt のサイズ制限チェック（5MB）
+        if len(uploaded_file.getvalue()) > 5 * 1024 * 1024:
+            st.error("requirements.txt は 5MB を超えています。")
+            # 処理を中断
+            st.stop()
+            # 処理を中断
+        else:
+            # 処理状態を表示するプレースホルダー
+            status_text = st.empty()
+            progress_bar = st.progress(0)
+
+            os_prefix, platform_tag = platform_map[target_os]
+            py_ver_short = target_py_version.replace(".", "")  # "3.10" -> "310"
 
         status_text.info("一時ディレクトリを準備中...")
         progress_bar.progress(10)
@@ -84,12 +91,23 @@ if uploaded_file is not None:
             ]
 
             # サブプロセスでコマンドを実行
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True)
+            except FileNotFoundError as e:
+                progress_bar.empty()
+                status_text.error("❌ pip が見つかりません。Python の環境を確認してください。")
+                st.exception(e)
+                st.stop()
+            except Exception as e:
+                progress_bar.empty()
+                status_text.error("❌ パッケージダウンロード中に予期せぬエラーが発生しました。")
+                st.exception(e)
+                st.stop()
 
             if result.returncode != 0:
                 progress_bar.empty()
                 status_text.error("❌ パッケージのダウンロード中にエラーが発生しました。")
-                st.warning("**よくある原因:** 指定したOS・Pythonバージョン用の「コンパイル済みバイナリ(wheel)」が提供されていないライブラリが含まれています。")
+                st.warning("**よくある原因:** 指定したOS・Pythonバージョン用の\"コンパイル済みバイナリ(wheel)\"が提供されていないライブラリが含まれています。")
                 with st.expander("詳細なエラーログを見る"):
                     st.code(result.stderr)
             else:
@@ -114,5 +132,4 @@ if uploaded_file is not None:
                     data=zip_data,
                     file_name=f"packages_{os_prefix}_py{py_ver_short}.zip",
                     mime="application/zip",
-                    type="primary"
-                )
+                                    )
