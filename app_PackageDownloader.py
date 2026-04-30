@@ -120,6 +120,13 @@ if uploaded_file is not None:
                     progress_bar.progress(100)
                     status_text.success("✅ ZIPファイルの作成が完了しました！下のボタンからダウンロードしてください。")
 
+                    # パッケージ一覧を表示
+                    package_files = sorted(os.listdir(download_dir))
+                    with st.expander(f"📦 パッケージの内容一覧（{len(package_files)}件）"):
+                        for f in package_files:
+                            fsize = os.path.getsize(os.path.join(download_dir, f))
+                            st.text(f"{f}  ({fsize:,} bytes)")
+
                     # ZIPファイルをメモリに読み込んでダウンロードボタンを生成
                     with open(zip_file_path, "rb") as fp:
                         zip_data = fp.read()
